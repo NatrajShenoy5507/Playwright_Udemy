@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
-
-test('login - Client App', async function({page, browser}){
+test.describe("login Test", ()=>{
+    test('login - Client App', async function({page, browser}){
     const pageUrl='https://rahulshettyacademy.com/client/#/auth/login';
     const firstName = 'Playwright';
     const lastName = 'test';
@@ -21,4 +21,5 @@ test('login - Client App', async function({page, browser}){
     await cardBody.first().waitFor();
     const title = await cardBody.allTextContents();
     console.log(title)
+})
 })
