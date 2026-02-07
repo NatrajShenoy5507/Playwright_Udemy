@@ -16,7 +16,13 @@ const { test, expect } = require('@playwright/test');
         name:"Playwright test",
     };
     const inValidCoupon ="PLAYWRIGHTTESTING";
-    const validCoupon ="rahulshettyacademy"
+    const validCoupon ="rahulshettyacademy";
+    const thankYoutext = " Thankyou for the order. ";
+    const orderPageHeadingText = "Your Orders";
+    const orderpreHeading = "Thank you for Shopping With Us";
+    const orderHeading =" order summary ";
+
+    
 
 test.describe("login Test", ()=>{
     test('login - Client App', async function({page, browser}){
@@ -86,6 +92,16 @@ test.describe("login Test", ()=>{
         const applyCounponButton = page.locator('button:has-text("Apply Coupon")');
         const couponAppliedtext =page.locator('text="* Coupon Applied"');
         const inValidCoupontext = page.locator('text="* Invalid Coupon"');
+        const userEmailverify = page.locator(".user__name [type='text']");
+        const placeOrderButton = page.locator('.action__submit');
+        const submitSuccessThankYou = page.locator('.hero-primary');
+        const orderIdlocator = page.locator('.em-spacer-1 .ng-star-inserted');
+        const ordernavBar = page.locator('ul [routerlink="/dashboard/myorders"]');
+        const orderPageHeading = page.locator('.container h1');
+        const orderTable = page.locator('table');
+        const emailWrapper = page.locator('.container-fluid .email-wrapper');
+        const orderSummaryPagepreheading = page.locator('.container-fluid .email-wrapper .email-preheader');
+        const orderSummaryPageHeading = page.locator('.email-container .email-title');
 
         //Test
         await page.goto(pageUrl);
@@ -130,5 +146,24 @@ test.describe("login Test", ()=>{
         await applyCounponButton.click();
         await couponAppliedtext.waitFor();
         await expect(couponAppliedtext).toBeVisible();
+        await expect(userEmailverify.first()).toHaveText(email);
+        await placeOrderButton.click();
+        await expect(submitSuccessThankYou).toHaveText(thankYoutext);
+        const orderId = await orderIdlocator.textContent();
+        const orderSplit = orderId.split(" ");
+        const finalOrderId =orderSplit[2];
+        await ordernavBar.click();
+        await expect(orderPageHeading).toHaveText(orderPageHeadingText);
+        await orderTable.waitFor()
+        const orders = await orderTable.locator('tbody tr').count();
+        for (let i = 0; i < orders; i++) {
+             if(await orderTable.locator('tbody tr th').nth(i).textContent() === finalOrderId){
+                await orderTable.locator('tbody tr').nth(i).locator('td button').first().click()
+             }
+             break;
+        }
+        await emailWrapper.waitFor();
+        await expect(orderSummaryPagepreheading).toHaveText(orderpreHeading);
+        await expect(orderSummaryPageHeading).toHaveText(orderHeading);
     })
 })
